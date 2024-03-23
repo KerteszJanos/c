@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <dirent.h>
 
 void addNewPoem()
 {
@@ -44,7 +45,39 @@ void addNewPoem()
 
 void showListOfPoems()
 {
-	printf("Showing list of poems\n");
+	char c;
+	char path[17] = "poems/";
+	int f;
+	struct dirent *pDirent;
+	DIR *pDir;
+	pDir = opendir("./poems");
+	if(pDir == NULL)
+	{
+		perror("Error at opening the directory\n");
+		exit(1);
+	}
+	while((pDirent = readdir(pDir)) != NULL)
+	{
+		if(pDirent->d_name[0] != '.')
+		{
+			printf("Poem name: %s\n", pDirent->d_name);
+			printf("Poem content: ");
+			strcpy(path,"poems/");
+			strcat(path,pDirent->d_name);
+			f = open(path, O_RDONLY);
+			if(f<0)
+			{
+				perror("Error at opening the file\n");
+				exit(0);
+			}
+			while(read(f,&c,sizeof(c)))
+			{
+				printf("%c",c);
+			}
+			printf("\n\n");
+		}
+	}
+	closedir(pDir);
 }
 
 void deletePoem()
