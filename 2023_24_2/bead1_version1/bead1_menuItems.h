@@ -68,7 +68,7 @@ void showListOfPoems()
 			if(f<0)
 			{
 				perror("Error at opening the file\n");
-				exit(0);
+				exit(1);
 			}
 			while(read(f,&c,sizeof(c)))
 			{
@@ -82,10 +82,75 @@ void showListOfPoems()
 
 void deletePoem()
 {
-	printf("Deleting poem\n");
+	printf("Write the name of the poem you want to delete: ");
+	char delPoemName[11];
+	char c;
+
+	scanf("%10[^\n]", delPoemName);
+	do //clear puffer
+	{
+		scanf("%c",&c);
+	}
+	while(c != '\n');
+
+	char path[17] = "poems/";
+	strcat(path,delPoemName);
+	if(remove(path))
+	{
+		perror("Unable to delete the file!\n");
+		//exit(1);
+	}
+	else
+	{
+		printf("%s poem deleted successfully!\n", delPoemName);
+	}
 }
 
 void editPoem()
 {
-	printf("Editing poem\n");
+	printf("Write the name of the poem you want to edit: ");
+	char editPoemName[11];
+	char c;
+
+	scanf("%10[^\n]", editPoemName);
+	do //clear puffer
+	{
+		scanf("%c",&c);
+	}
+	while(c != '\n');
+	
+	char path[17] = "poems/";
+	strcat(path, editPoemName);
+
+	int f = open(path, O_RDONLY);
+	if(f<0)
+	{
+		perror("Error at opening the file\n");
+		//exit(1);
+	}
+	printf("You can type the edited version under the original one!\n\n");
+	while(read(f,&c,sizeof(c)))
+	{
+		printf("%c",c);
+	}
+	printf("\n");
+	close(f);
+
+	f = open(path, O_WRONLY | O_TRUNC);
+	if(f<0)
+	{
+		perror("Error at opening the file\n");
+		//exit(1);
+	}
+	char editedPoem[101];
+	scanf("%100[^\n]",editedPoem);
+	do //clear puffer
+	{
+		scanf("%c",&c);
+	}
+	while(c != '\n');
+
+	write(f, &editedPoem, strlen(editedPoem));
+	printf("Poem edited successfully!\n");
+	close(f);
 }
